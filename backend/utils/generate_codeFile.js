@@ -14,8 +14,19 @@ if (!fs.existsSync(codesDirectory)) {
 const generate_codeFile = (language, code) => {
   console.log("codesDirectory : ", codesDirectory);
   const unique_name = uuidv4();
-  const fileName = `${unique_name}.${language}`;
-  const filePath = path.join(codesDirectory, fileName);
+  let filePath = "";
+  if (language == "java") {
+    fs.mkdirSync(`${codesDirectory}/${unique_name}`, { recursive: true });
+    filePath = path.join(`${codesDirectory}/${unique_name}`, `Main.java`);
+  } else if (language == "cpp" || language == "python") {
+    if (language == "python") {
+      language = "py";
+    }
+    const fileName = `${unique_name}.${language}`;
+    filePath = path.join(codesDirectory, fileName);
+  } else {
+  }
+
   fs.writeFileSync(filePath, code);
   return filePath;
 };
