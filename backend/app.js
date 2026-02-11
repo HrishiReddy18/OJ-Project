@@ -3,6 +3,7 @@ const { generate_codeFile } = require("./utils/generate_codeFile"); //destructur
 // executes entire file from top-bottom and export it to here
 const { execute_cpp, execute_java } = require("./utils/execute_code");
 const run_routes = require("./routes/runRoutes");
+const { router: submit_route } = require("./routes/submitRoutes");
 const router = require("./routes/runRoutes");
 
 const app = express();
@@ -72,6 +73,7 @@ app.use("/run", run_routes);
 //   return res.status(200).json({ language, code });
 // });
 
+app.use("/submit", submit_route);
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
 });

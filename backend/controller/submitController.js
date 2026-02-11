@@ -5,8 +5,8 @@ const {
 } = require("../utils/execute_code");
 const { generate_codeFile } = require("../utils/generate_codeFile");
 
-const compileCode = async (req, res) => {
-  const { language, code, input = null } = req.body;
+const submitCode = async (req, res) => {
+  const { language, code, input } = req.body;
   if (code === undefined || !code) {
     return res.status(400).json({ success: false, error: "Empty code body!" });
   }
@@ -17,7 +17,8 @@ const compileCode = async (req, res) => {
     code,
     input
   );
-  console.log("codeFile: ", outputfilePath);
+  console.log("inputfilePath: ", inputfilePath);
+  console.log("outputfilepath: ", outputfilePath);
 
   let ans = "";
   // evaluating the file
@@ -65,4 +66,4 @@ const compileCode = async (req, res) => {
   return res.status(200).json({ language, code });
 };
 
-module.exports = { compileCode };
+module.exports = { submitCode };

@@ -10,7 +10,7 @@ if (!fs.existsSync(outputsDirectory)) {
   fs.mkdirSync(outputsDirectory, { recursive: true });
 }
 
-const execute_cpp = (filePath) => {
+const execute_cpp = (inputfilePath, filePath) => {
   /*
     1. compile ----> g++ main.cpp
     2. run -----> ./a.out or a.exe
@@ -29,7 +29,7 @@ const execute_cpp = (filePath) => {
   const execute_cmd = new Promise((resolve, reject) => {
     // exec fun in Child_process to access the termial
     exec(
-      `g++ ${filePath} -o ${outputFilePath} && cd ${outputsDirectory} && ${outputFileName}.exe`,
+      `g++ ${filePath} -o ${outputFilePath} && cd ${outputsDirectory} && ${outputFileName}.exe < ${inputfilePath}`,
       (error, stdout, stderr) => {
         if (error) {
           //This is error in your code
