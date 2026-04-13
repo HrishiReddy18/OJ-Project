@@ -4,6 +4,7 @@ const { v4: uuidv4 } = require("uuid");
 const { exec } = require("child_process");
 const { error } = require("console");
 const { stdout } = require("process");
+const { fileURLToPath } = require("url");
 
 const outputsDirectory = path.join(__dirname, "../outputs");
 if (!fs.existsSync(outputsDirectory)) {
@@ -43,11 +44,11 @@ const execute_cpp = (inputfilePath, filePath) => {
         if (stderr) {
           console.log("STD ERROR");
           // If the command produce any error (if there is any error in the command)
-          // reject({ "error in the terminal": stderr });
+          reject({ "error in the terminal": stderr });
         }
 
         resolve(stdout);
-      }
+      },
     );
   });
 
@@ -97,7 +98,7 @@ The Java source file (e.g. Main.java)
         }
 
         resolve(stdout);
-      }
+      },
     );
   });
 

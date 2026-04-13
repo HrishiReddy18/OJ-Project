@@ -67,3 +67,4 @@ const submitCode = async (req, res) => {
 };
 
 module.exports = { submitCode };
+// export default submitCode;
