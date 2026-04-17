@@ -1,0 +1,39 @@
+.list-of-problems {
+  display: flex;
+  flex-direction: column;
+  .problem {
+    display: flex;
+    gap: 8px;
+    height: 32px;
+    align-items: center;
+    cursor: pointer;
+
+    .problem-col {
+      flex: 1; //1 part
+      text-align: center;
+      .solve-button {
+        width: 100%;
+        cursor: pointer;
+        border-radius: 6px;
+      }
+      .solved-button {
+        width: 100%;
+        background: none;
+        background-color: green;
+        color: white;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+      }
+    }
+    .title {
+      flex: 12; //parts
+    }
+  }
+  .evenIndex {
+    background-color: lightgrey;
+  }
+  .oddIndex {
+    background-color: grey;
+  }
+}

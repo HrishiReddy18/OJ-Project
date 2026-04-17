@@ -1,0 +1,29 @@
+.problem-container {
+  display: flex;
+  flex-direction: column;
+  .problem {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    ul.constraints {
+      padding-inline-start: 20px;
+      margin-top: 0px;
+    }
+  }
+}
+@media only screen and (min-width: 768px) {
+  .problem-container {
+    flex-direction: row;
+    gap: 16px;
+    .problem {
+      flex: 1; // takes remaining space
+      min-width: 0; // 🔥 prevents overflow   //flex-item default  min-width:auto (content)
+    }
+    .editor {
+      width: 60%;
+      min-width: 0; // 🔥 prevents overflow
+      border-left: 2px solid grey;
+    }
+  }
+}
