@@ -1,0 +1,91 @@
+https://chatgpt.com/c/6a054bc3-e8a0-8324-8003-4c3d4ca89ad2
+
+***********************************************************************************************
+you mean updated state is visible only when re rendered
+Yes bro.
+setState does not immediately change the state variable in the current render.
+***********************************************************************************************
+when i click on run , showTestCases is called or not
+
+Yes, showTestCases() is being called because you are doing:
+
+await showTestCases();
+
+inside runProblem.
+
+But the real issue is:
+
+setdefaultTestCases(defaultTestCases);
+setcurrentTc(0);
+
+are asynchronous state updates.
+
+So immediately after await showTestCases(), React state is still not updated yet.
+
+That means here:
+
+currInput.input = defaultTestCases[currentTc]?.input;
+
+defaultTestCases may still be []
+and currentTc may still be -1.
+
+So you get undefined.
+
+Better approach:
+
+Make showTestCases return the fetched test cases.
+
+const showTestCases = async () => {
+  try {
+    const data = await fetch(
+      `http://localhost:3000/Problems/${problem._id}`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    );
+
+    if (!data.ok) throw new Error("Fetch failed");
+
+    const currentProblem = await data.json();
+
+    const visibleTestCases = currentProblem.testCases.filter(
+      (x) => x.isHidden === false
+    );
+
+    setdefaultTestCases(visibleTestCases);
+    setcurrentTc(0);
+
+    return visibleTestCases;
+  } catch (e) {
+    console.log(e);
+    return [];
+  }
+};
+
+Then:
+
+const runProblem = async () => {
+  const testCases = await showTestCases();
+
+  let currInput = {
+    ...input,
+    input: testCases[0]?.input,
+  };
+
+  const data = await fetch("http://localhost:3000/run", {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(currInput),
+    method: "POST",
+    credentials: "include",
+  });
+
+  const res = await data.json();
+
+  console.log(res);
+  setTcOutput(res);
+};
+
+This avoids depending on state updates immediately after setState.

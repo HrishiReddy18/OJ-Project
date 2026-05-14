@@ -6,12 +6,12 @@ const { error } = require("console");
 const { stdout } = require("process");
 const { fileURLToPath } = require("url");
 
-const outputsDirectory = path.join(__dirname, "../outputs");
-if (!fs.existsSync(outputsDirectory)) {
-  fs.mkdirSync(outputsDirectory, { recursive: true });
+const executableFilesDirectory = path.join(__dirname, "../executableFiles");
+if (!fs.existsSync(executableFilesDirectory)) {
+  fs.mkdirSync(executableFilesDirectory, { recursive: true });
 }
 
-const execute_cpp = (inputfilePath, filePath) => {
+const execute_cpp = (inputfilePath, filePath, input) => {
   /*
     1. compile ----> g++ main.cpp
     2. run -----> ./a.out or a.exe
@@ -24,37 +24,93 @@ const execute_cpp = (inputfilePath, filePath) => {
             1. g++ main.cpp -o app && app
     */
 
-  const outputFileName = path.basename(filePath).split(".")[0];
-  const outputFilePath = path.join(outputsDirectory, `${outputFileName}.exe`);
+  const executableFileName = path.basename(filePath).split(".")[0];
+  const executableFilePath = path.join(executableFilesDirectory, `${executableFileName}.exe`);
 
   const execute_cmd = new Promise((resolve, reject) => {
     // exec fun in Child_process to access the termial
-    exec(
-      `g++ ${filePath} -o ${outputFilePath} && cd ${outputsDirectory} && ${outputFileName}.exe < ${inputfilePath}`,
-      (error, stdout, stderr) => {
-        if (error) {
-          //This is error in your code
-          console.log("Compilation or runtime error");
-          reject({
-            message: "Compilation or runtime error",
-            error: error.message,
-          });
-        }
 
-        if (stderr) {
-          console.log("STD ERROR");
-          // If the command produce any error (if there is any error in the command)
-          reject({ "error in the terminal": stderr });
-        }
+    //(spawn → event-driven (data, close, error)) ===> event-driven programming (on data, on close, on error)
+    //  Feature  	exec	spawn
+    // Shell-used	Yes	No
+    // Output	Buffered	Streamed
+    // Large-output	Not-good	Good
+    // Security	Risky	Safer
 
-        resolve(stdout);
-      },
-    );
+    /////////////////////////////////
+    //     What actually happens without a Promise
+
+    // If you try:
+
+    // function runCode(...) {
+    //   const process = spawn(...);
+    //   return stdout; // ❌ wrong
+    // }
+
+    // At this point:
+
+    // process just started
+    // no output has arrived yet
+    // function exits immediately
+
+    // So you'd always get empty output.
+    ///////////////////////////////////////////////////////////////
+
+    console.log("input", JSON.stringify(input));
+    if (input) {
+      //take source code and generate executable file
+      //then run the executable file with the input file
+      exec(
+        `g++ ${filePath} -o ${executableFilePath} && cd ${executableFilesDirectory} && ${executableFileName}.exe < ${inputfilePath}`,
+        (error, stdout, stderr) => {
+          if (error) {
+            //This is error in your code
+            console.log("Compilation or runtime error");
+            reject({
+              message: "Compilation or runtime error",
+              error: error.message,
+              err: error.stack,
+            });
+          }
+
+          if (stderr) {
+            console.log("STD ERROR");
+            // If the command produce any error (if there is any error in the command)
+            //This is error in your NodeJs code
+            reject({ "error in the terminal": stderr });
+          }
+
+          resolve(stdout);
+        },
+      );
+    } else {
+      exec(
+        `g++ ${filePath} -o ${executableFilePath} && cd ${executableFilesDirectory} && ${executableFileName}.exe`,
+        (error, stdout, stderr) => {
+          if (error) {
+            //This is error in your code
+            console.log("Compilation or runtime error");
+            reject({
+              message: "Compilation or runtime error",
+              error: error.message,
+            });
+          }
+
+          if (stderr) {
+            console.log("STD ERROR");
+            // If the command produce any error (if there is any error in the command)
+            reject({ "error in the terminal": stderr });
+          }
+
+          resolve(stdout);
+        },
+      );
+    }
   });
 
   return execute_cmd;
 };
-const execute_java = (filePath) => {
+const execute_java = (inputfilePath, filePath) => {
   /*
 Meaning
 
@@ -71,14 +127,14 @@ javac → Java compiler
 The Java source file (e.g. Main.java)
   */
   console.log("filepath: ", filePath);
-  const outputFileName = filePath.split("\\").at(-2);
-  const outputFileDir = path.join(outputsDirectory, outputFileName);
-  fs.mkdirSync(`${outputFileDir}`, { recursive: true });
-  const outputFilePath = path.join(outputFileDir, `Main.class`);
+  const executableFileName = filePath.split("\\").at(-2);
+  const executableFileDir = path.join(executableFilesDirectory, executableFileName);
+  fs.mkdirSync(`${executableFileDir}`, { recursive: true });
+  const executableFilePath = path.join(executableFileDir, `Main.class`);
 
   const execute_cmd = new Promise((resolve, reject) => {
     exec(
-      `javac -d "${outputFileDir}" "${filePath}" && cd "${outputFileDir}" && jav Main`,
+      `javac -d "${executableFileDir}" "${filePath}" && cd "${executableFileDir}" && java Main < ${inputfilePath}`,
       (error, stdout, stderr) => {
         if (error) {
           //This is error in your code
@@ -105,9 +161,9 @@ The Java source file (e.g. Main.java)
   return execute_cmd;
 };
 
-const execute_python = (filePath) => {
+const execute_python = (inputfilePath, filePath) => {
   const execute_cmd = new Promise((resolve, reject) => {
-    exec(`py ${filePath}`, (error, stdout, stderr) => {
+    exec(`py "${filePath} " < "${inputfilePath}"`, (error, stdout, stderr) => {
       if (error) {
         //This is error in your code
         console.log("84: Compilation or runtime error");
@@ -133,3 +189,6 @@ const execute_python = (filePath) => {
 };
 
 module.exports = { execute_cpp, execute_java, execute_python };
+
+/////////////////////////////////////////
+//////////////////////////////////////////

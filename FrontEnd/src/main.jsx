@@ -4,7 +4,9 @@ import { BrowserRouter, RouterProvider } from "react-router-dom";
 // import './index.css'
 import App from "./App.jsx";
 import { router } from "./router.jsx";
-import {UserProvider} from "./modules/shared/userNameContext.jsx"
+import { UserProvider } from "./modules/shared/userNameContext.jsx";
+import { ProblemsProvider } from "./modules/shared/problemsContext.jsx";
+import { InputProvider } from "./modules/shared/inputContext.jsx";
 createRoot(document.getElementById("root")).render(
   // <StrictMode>
   //   <App />
@@ -15,10 +17,13 @@ createRoot(document.getElementById("root")).render(
   // </BrowserRouter>,
 
   <UserProvider>
-  <RouterProvider
-    router={router}
-    fallbackElement={<h2>Loading app...</h2>}
-  ></RouterProvider>
-  </UserProvider>
-
+    <ProblemsProvider>
+      <InputProvider>
+        <RouterProvider
+          router={router}
+          fallbackElement={<h2>Loading app...</h2>}
+        ></RouterProvider>
+      </InputProvider>
+    </ProblemsProvider>
+  </UserProvider>,
 );

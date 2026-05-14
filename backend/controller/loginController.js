@@ -31,6 +31,7 @@ const login = async (req, res) => {
       },
       process.env.ACCESS_SECRET_KEY,
       { expiresIn: "15m" },
+      // { expiresIn: "2m" },
     );
 
     const refreshToken = jwt.sign(
@@ -41,6 +42,7 @@ const login = async (req, res) => {
       },
       process.env.Refresh_SECRET_KEY,
       { expiresIn: "7d" },
+      // { expiresIn: "4m" },
     );
 
     //if user logged-in , update the refresh TOken  and Max expiry in DB
@@ -50,6 +52,7 @@ const login = async (req, res) => {
         $set: {
           refreshToken: refreshToken,
           maximumDateForToken: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+          // maximumDateForToken: new Date(Date.now() + 240 * 1000),  //4m for testing
         },
       },
     );

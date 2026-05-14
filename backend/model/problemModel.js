@@ -11,7 +11,10 @@ const testCaseSchema = new mongoose.Schema({
   output: String,
   isHidden: {
     type: Boolean,
-    default: true, // hidden test cases for submission
+  },
+  idDefault: {
+    type: Boolean,
+    default: false,
   },
 });
 

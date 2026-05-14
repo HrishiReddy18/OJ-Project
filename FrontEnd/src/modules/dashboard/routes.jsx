@@ -6,17 +6,17 @@ export const routes = [
   {
     path: "",
     element: (
-      <ProblemsProvider>
-        <Problems />
-      </ProblemsProvider>
+      // <ProblemsProvider>
+      <Problems />
+      // </ProblemsProvider>
     ),
   },
   {
     path: "problem/:id",
     element: (
-      <ProblemsProvider>
-        <ProblemStatement />
-      </ProblemsProvider>
+      // <ProblemsProvider>
+      <ProblemStatement />
+      // </ProblemsProvider>
     ),
   },
 ];
