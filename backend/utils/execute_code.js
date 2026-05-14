@@ -25,7 +25,11 @@ const execute_cpp = (inputfilePath, filePath, input) => {
     */
 
   const executableFileName = path.basename(filePath).split(".")[0];
-  const executableFilePath = path.join(executableFilesDirectory, `${executableFileName}.exe`);
+  // const executableFilePath = path.join(executableFilesDirectory, `${executableFileName}.exe`);
+  const executableFilePath = path.join(
+    executableFilesDirectory,
+    `${executableFileName}`,
+  );
 
   const execute_cmd = new Promise((resolve, reject) => {
     // exec fun in Child_process to access the termial
@@ -61,7 +65,8 @@ const execute_cpp = (inputfilePath, filePath, input) => {
       //take source code and generate executable file
       //then run the executable file with the input file
       exec(
-        `g++ ${filePath} -o ${executableFilePath} && cd ${executableFilesDirectory} && ${executableFileName}.exe < ${inputfilePath}`,
+        // `g++ ${filePath} -o ${executableFilePath} && cd ${executableFilesDirectory} && ${executableFileName}.exe < ${inputfilePath}`,
+        `g++ ${filePath} -o ${executableFilePath} && cd ${executableFilesDirectory} && ./${executableFileName} < ${inputfilePath}`,
         (error, stdout, stderr) => {
           if (error) {
             //This is error in your code
@@ -85,7 +90,8 @@ const execute_cpp = (inputfilePath, filePath, input) => {
       );
     } else {
       exec(
-        `g++ ${filePath} -o ${executableFilePath} && cd ${executableFilesDirectory} && ${executableFileName}.exe`,
+        // `g++ ${filePath} -o ${executableFilePath} && cd ${executableFilesDirectory} && ${executableFileName}.exe`,
+        `g++ ${filePath} -o ${executableFilePath} && cd ${executableFilesDirectory} && ./${executableFileName}`,
         (error, stdout, stderr) => {
           if (error) {
             //This is error in your code
@@ -128,7 +134,10 @@ The Java source file (e.g. Main.java)
   */
   console.log("filepath: ", filePath);
   const executableFileName = filePath.split("\\").at(-2);
-  const executableFileDir = path.join(executableFilesDirectory, executableFileName);
+  const executableFileDir = path.join(
+    executableFilesDirectory,
+    executableFileName,
+  );
   fs.mkdirSync(`${executableFileDir}`, { recursive: true });
   const executableFilePath = path.join(executableFileDir, `Main.class`);
 
