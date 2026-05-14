@@ -12,7 +12,7 @@ const compileCode = async (req, res) => {
   if (code === undefined || !code) {
     return res.status(400).json({ success: false, error: "Empty code body!" });
   }
-  console.log(language, code);
+  // console.log(language, code);
 
   let stdIn = "";
   if (input) {
@@ -64,7 +64,7 @@ const compileCode = async (req, res) => {
       // .then ==> if failure ===> throws the error ===> you need to handle the error
       try {
         ans = await execute_cpp(inputfilePath, codeFilePath, input);
-        console.log(ans);
+        console.log("output: ", ans);
       } catch (err) {
         return res.status(500).json({ error: err.message });
       }
@@ -73,7 +73,7 @@ const compileCode = async (req, res) => {
     case "java":
       try {
         ans = await execute_java(inputfilePath, codeFilePath, input);
-        console.log(ans);
+        console.log("output: ", ans);
       } catch (err) {
         return res.status(500).json({ error: err.message });
       }
@@ -82,7 +82,7 @@ const compileCode = async (req, res) => {
     case "python":
       try {
         ans = await execute_python(inputfilePath, codeFilePath, input);
-        console.log(ans);
+        console.log("output: ", ans);
       } catch (err) {
         return res.status(500).json({ error: err.message });
       }

@@ -12,6 +12,17 @@ function Console(props) {
 
   const { problem } = props;
   const runProblem = async () => {
+    setcurrentTc(0);
+
+    //*************************************************************** */
+    // If you want to see updated values:
+    // useEffect(() => {
+    //   console.log(tcOutput);
+    // }, [tcOutput]);
+    // This runs after re-render with updated state.
+    //*******************************************************************88 */
+    setTcOutput(() => []); //instant change
+
     //*************************************************************** */
     // check doubt1.txt
     //*************************************************************** */
@@ -20,19 +31,24 @@ function Console(props) {
     let defaultTestCases = await showTestCases();
     console.log(defaultTestCases);
     let currInput = input; //fetch from context API
-    currInput.input = defaultTestCases[0]?.input;
-    const data = await fetch("http://localhost:3000/run", {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(currInput),
-      method: "POST",
-      credentials: "include",
-    });
+    for (let defaultTestCase of defaultTestCases) {
+      currInput.input = defaultTestCase.input;
+      const data = await fetch("http://localhost:3000/run", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(currInput),
+        method: "POST",
+        credentials: "include",
+      });
 
-    const res = await data.json();
-    console.log(res);
-    setTcOutput(res);
+      const res = await data.json();
+      console.log(res);
+      //*************Updating state by taking old value***************************************** */
+      setTcOutput((prev) => [...prev, res]); //instant change
+      console.log("tcOutput: ", tcOutput);
+    }
+    console.log("tcOutput: ", tcOutput);
   };
   const submitProblem = async () => {
     let currInput = input; //fetch from context API
@@ -51,7 +67,6 @@ function Console(props) {
     setTcOutput(res);
   };
   const showTestCases = async () => {
-    setcurrentTc(0);
     try {
       const data = await fetch(
         `http://localhost:3000/Problems/${problem._id}`,
@@ -78,36 +93,37 @@ function Console(props) {
   };
   return (
     <div className="console-container">
-      <div className="body">
-        <div className="header">
-          <button className="inputs" onClick={() => showTestCases()}>
+      <div className="header">
+        {/* <button className="inputs" onClick={() => showTestCases()}>
             TestCases
-          </button>
-          {/* <button className="ouputs">Result</button> */}
-        </div>
-        <div className="body"></div>
+          </button> */}
+        {/* <button className="ouputs">Result</button> */}
       </div>
-      {currentTc >= 0 && (
-        <div className="testCaseHeader">
-          {defaultTestCases.map((testCase, index) => (
-            <button
-              className="testCase"
-              onClick={() => selectedTestCase(index)}
-            >
-              {" "}
-              TestCase-{index + 1}
-            </button>
-          ))}
-        </div>
-      )}
+      <div className="testCaseHeader">
+        {defaultTestCases.map((testCase, index) => (
+          <button className="testCase" onClick={() => selectedTestCase(index)}>
+            {" "}
+            TestCase-{index + 1}
+          </button>
+        ))}
+      </div>
+
       {currentTc >= 0 && (
         <div className="currentTestCase">
           <div className="input">{defaultTestCases[currentTc]?.input}</div>
-          {tcOutput && (
+          <div className="Expectedoutput">
+            Expected OutPut: {defaultTestCases[currentTc]?.output}
+          </div>
+          {tcOutput[currentTc]?.ans && (
             <div>
-              <div className="output">OutPut: {tcOutput.ans}</div>
-              <div className="Expectedout">
-                Expected OutPut: {defaultTestCases[currentTc]?.output}
+              <div className="output">
+                Your OutPut: {tcOutput[currentTc]?.ans}
+                {defaultTestCases[currentTc]?.output ==
+                tcOutput[currentTc]?.ans ? (
+                  <span>{"\u2705"}</span>
+                ) : (
+                  <span>{"\u274C"}</span>
+                )}
               </div>
             </div>
           )}

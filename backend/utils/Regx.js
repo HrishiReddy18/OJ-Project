@@ -23,7 +23,7 @@
 // 6. convert input to requird format   ===> normalise function ====> extract
 //////////////////////////////////////
 
-// 7. Object.freeze()  ==> 
+// 7. Object.freeze()  ==>
 
 // Reference copy
 // const a= {}; b=a ===> pass by reference
@@ -47,11 +47,11 @@
 
 //12. function in object
 
-
 //13. function is also a object in js
 
-
 //////////////////ARRAY///////////////////////
+// for(let i of array)    ====> values
+// for(let i in object)   ==> for keys
 // 1.push, unshift
 // 2.pop, shift
 // 3.includes, indexOf
