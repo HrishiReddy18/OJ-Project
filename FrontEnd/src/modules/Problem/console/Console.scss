@@ -1,14 +1,38 @@
 .console-container {
-  .body {
-    .header {
-      display: flex;
-      height: 40px;
-      gap: 8px;
-    }
+  .header {
+    display: flex;
+    // height: 40px;
+    gap: 8px;
+  }
+  .tc-ai {
+    display: flex;
+    justify-content: space-between;
     .testCaseHeader {
       display: flex;
-      flex-direction: column;
       gap: 4px;
+    }
+    .ai-review {
+      background-color: green;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 2px;
+      cursor: pointer;
+    }
+  }
+  .submit-success {
+    color: green;
+  }
+  .submit-failure {
+    color: red;
+  }
+  .submit-fail {
+    color: red;
+  }
+  .currentTestCase {
+    .error-msge {
+      background-color: black;
+      color: rgb(170, 65, 65);
     }
   }
 }

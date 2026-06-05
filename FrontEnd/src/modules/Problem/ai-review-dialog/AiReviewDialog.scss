@@ -1,0 +1,16 @@
+.ai-review-dialog {
+  position: fixed;
+  top: 32px;
+  left: calc(50% - 200px);
+  max-width: 400px;
+  background-color: black;
+  max-height: 80vh;
+  color: white;
+  overflow: auto;
+  .close-button {
+    display: flex;
+    flex-direction: row-reverse;
+    margin-bottom: 16px;
+    cursor: pointer;
+  }
+}

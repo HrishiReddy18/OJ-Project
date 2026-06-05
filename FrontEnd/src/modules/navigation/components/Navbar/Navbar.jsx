@@ -33,7 +33,8 @@ function Navbar() {
   return (
     <div className="nav-bar-container">
       <div className="logo">
-        <img src="{null}" alt="LOGO" />
+        {/* <img src="{null}" alt="LOGO" /> */}
+        LOGO
       </div>
       <div className="section">
         <ul className="nav-list">

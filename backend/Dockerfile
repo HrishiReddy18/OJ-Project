@@ -3,7 +3,11 @@ FROM node:22-alpine
 # WORKDIR  containerInDockerHub    (root/OJ_backend)
 WORKDIR /OJ_backend
 
-RUN apk update && apk add --no-cache g++
+RUN apk update && apk add --no-cache \
+g++ \
+openjdk17 \
+python3 \
+py3-pip
 
 # COPY local containerInDockerHub  ====> COPY .(local) .(WORKDIR)
 

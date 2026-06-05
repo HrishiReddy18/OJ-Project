@@ -17,11 +17,11 @@ function ProblemStatement() {
   return (
     <div className="problem-container">
       <div className="problem">
-        <h1>
+        {/* <h1>
           Here when we refresh , we are not getting the problem because , we are
           taking problem from context APi
         </h1>
-        <h1>Here APi is not called</h1>
+        <h1>Here APi is not called</h1> */}
         <div className="title">
           <strong>{problem.title}</strong>
         </div>

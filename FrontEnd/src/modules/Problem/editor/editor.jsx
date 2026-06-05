@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { Editor as MonacoEdditor } from "@monaco-editor/react";
+import { Editor as MonacoEditor } from "@monaco-editor/react";
 import "./editor.scss";
 import { inputContext } from "../../shared/inputContext";
 
@@ -34,6 +34,7 @@ int main() {
 
   const chooseLanguage = (e) => {
     SetLanguage(e.target.value);
+    getInput({ code: code, language: e.target.value });
   };
   const generateInput = (value) => {
     setCode(value); //it is called , but state variables are updated only when re-rendered
@@ -56,9 +57,10 @@ int main() {
         <option value="python">python</option>
         <option value="cpp">cpp</option>
       </select>
-      <MonacoEdditor
+      <MonacoEditor
         className="monacoEditor"
         language={language}
+        key={language}
         value={code}
         theme="vs-dark"
         onChange={(value) => generateInput(value)}

@@ -66,7 +66,9 @@ const compileCode = async (req, res) => {
         ans = await execute_cpp(inputfilePath, codeFilePath, input);
         console.log("output: ", ans);
       } catch (err) {
-        return res.status(500).json({ error: err.message });
+        console.log("error cpp");
+        console.log(err);
+        return res.status(500).json({ err });
       }
       break;
 
@@ -75,7 +77,9 @@ const compileCode = async (req, res) => {
         ans = await execute_java(inputfilePath, codeFilePath, input);
         console.log("output: ", ans);
       } catch (err) {
-        return res.status(500).json({ error: err.message });
+        console.log("error java");
+        console.log(err);
+        return res.status(500).json({ err });
       }
       break;
 
@@ -84,7 +88,9 @@ const compileCode = async (req, res) => {
         ans = await execute_python(inputfilePath, codeFilePath, input);
         console.log("output: ", ans);
       } catch (err) {
-        return res.status(500).json({ error: err.message });
+        console.log("error python");
+        console.log(err);
+        return res.status(500).json({ err });
       }
       break;
 

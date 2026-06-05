@@ -48,7 +48,7 @@ const submitCode = async (req, res) => {
           code,
           stdin,
         );
-        console.log("line 49", codeFilePath);
+        console.log("line 51", codeFilePath);
         _inputfilePath = inputfilePath;
         _codeFilePath = codeFilePath;
         codeGenerated = true;
@@ -91,21 +91,22 @@ const submitCode = async (req, res) => {
     console.log(JSON.stringify(response));
     const verdict = response.every((x) => x.status == true);
     if (verdict)
-      return res.status(200).json({ message: "All test cases passed" });
-    else {
-      const wrongAnser = response.find((x) => x.status == false);
       return res
         .status(200)
-        .json({
-          message: `Wrong Answer at test case ${wrongAnser.tcNumber} : ${wrongAnser.input}`,
-        });
+        .json({ status: true, message: "All test cases passed" });
+    else {
+      const wrongAnser = response.find((x) => x.status == false);
+      return res.status(200).json({
+        status: false,
+        message: `Wrong Answer at test case ${wrongAnser.tcNumber} : ${wrongAnser.input}`,
+      });
     }
   } catch (err) {
     console.log("error : line 55 in submitController");
     return res.status(500).json({
       "error-message": err.message,
-      hrishi: "error",
       error: err.err,
+      status: false,
     });
   }
   return res.status(200).json({ language, code });

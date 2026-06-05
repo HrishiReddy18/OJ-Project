@@ -16,7 +16,7 @@ function Problems() {
   const { Problems, getProblems } = useContext(problemsContext);
   const navigate = useNavigate();
   const [problemsList, setProblemsList] = useState([]);
-  const [addNewProblem, setAddNewProblem] = useState([false]);
+  const [addNewProblem, setAddNewProblem] = useState(false);
 
   // const problemsList = [
   //   {

@@ -2,7 +2,7 @@ const path = require("path");
 const fs = require("fs");
 const { v4: uuidv4 } = require("uuid");
 const { exec } = require("child_process");
-const { error } = require("console");
+const { error, log } = require("console");
 const { stdout } = require("process");
 const { fileURLToPath } = require("url");
 
@@ -69,20 +69,22 @@ const execute_cpp = (inputfilePath, filePath, input) => {
         `g++ ${filePath} -o ${executableFilePath} && cd ${executableFilesDirectory} && ./${executableFileName} < ${inputfilePath}`,
         (error, stdout, stderr) => {
           if (error) {
-            //This is error in your code
-            console.log("Compilation or runtime error");
-            reject({
-              message: "Compilation or runtime error",
-              error: error.message,
-              err: error.stack,
-            });
+            // If the command produce any error (if there is any error in the command)
+            //This is error in your NodeJs code
+            //if the command only fails
+            reject({ "NodeJs error object": stderr });
           }
 
           if (stderr) {
+            //This is error in your code
+            // This is the error the that your program send to error stream
             console.log("STD ERROR");
-            // If the command produce any error (if there is any error in the command)
-            //This is error in your NodeJs code
-            reject({ "error in the terminal": stderr });
+            console.log("Compilation or runtime error input");
+            reject({
+              message: "Compilation or runtime error",
+              error: stderr.message,
+              err: stderr.stack,
+            });
           }
 
           resolve(stdout);
@@ -90,8 +92,8 @@ const execute_cpp = (inputfilePath, filePath, input) => {
       );
     } else {
       exec(
-        // `g++ ${filePath} -o ${executableFilePath} && cd ${executableFilesDirectory} && ${executableFileName}.exe`,
-        `g++ ${filePath} -o ${executableFilePath} && cd ${executableFilesDirectory} && ./${executableFileName}`,
+        `g++ ${filePath} -o ${executableFilePath} && cd ${executableFilesDirectory} && ${executableFileName}.exe`,
+        // `g++ ${filePath} -o ${executableFilePath} && cd ${executableFilesDirectory} && ./${executableFileName}`,
         (error, stdout, stderr) => {
           if (error) {
             //This is error in your code
@@ -116,7 +118,7 @@ const execute_cpp = (inputfilePath, filePath, input) => {
 
   return execute_cmd;
 };
-const execute_java = (inputfilePath, filePath) => {
+const execute_java = (inputfilePath, filePath, input) => {
   /*
 Meaning
 
@@ -145,21 +147,19 @@ The Java source file (e.g. Main.java)
     exec(
       `javac -d "${executableFileDir}" "${filePath}" && cd "${executableFileDir}" && java Main < ${inputfilePath}`,
       (error, stdout, stderr) => {
+        if (stderr) {
+          console.log("STD ERROR");
+          reject({ stderr });
+          return;
+        }
+
         if (error) {
-          //This is error in your code
-          console.log("84: Compilation or runtime error");
           reject({
             message: "Compilation or runtime error",
             error: error.message,
+            err: error.stack,
           });
           return; // prevent the further exection ====> as promise settels only once
-        }
-
-        if (stderr) {
-          console.log("STD ERROR");
-          // If the command produce any error (if there is any error in the command)
-          reject({ "error in the terminal": stderr });
-          return;
         }
 
         resolve(stdout);
@@ -170,30 +170,92 @@ The Java source file (e.g. Main.java)
   return execute_cmd;
 };
 
+// const execute_python = (inputfilePath, filePath) => {
+//   const execute_cmd = new Promise((resolve, reject) => {
+//     exec(
+//       `python "${filePath}" < "${inputfilePath}"`,
+//       (error, stdout, stderr) => {
+//         if (error) {
+//           //This is error in your code
+//           console.log("181: Compilation or runtime error");
+//           console.log(error.message);
+//           console.log(error.stack);
+
+//           reject({
+//             message: "Compilation or runtime error",
+//             error: error.message,
+//             err: error.stack,
+//           });
+//           return; // prevent the further exection ====> as promise settels only once
+//         }
+
+//         if (stderr) {
+//           console.log("STD ERROR");
+//           console.log(error.message);
+
+//           // If the command produce any error (if there is any error in the command)
+//           reject({ "error in the terminal": stderr });
+//           return;
+//         }
+
+//         resolve(stdout);
+//       },
+//     );
+//   });
+
+//   return execute_cmd;
+// };
+
 const execute_python = (inputfilePath, filePath) => {
   const execute_cmd = new Promise((resolve, reject) => {
-    exec(`py "${filePath} " < "${inputfilePath}"`, (error, stdout, stderr) => {
-      if (error) {
-        //This is error in your code
-        console.log("84: Compilation or runtime error");
-        reject({
-          message: "Compilation or runtime error",
-          error: error.message,
+    exec(
+      `python "${filePath}" < "${inputfilePath}"`,
+      { timeout: 2000 },
+      (error, stdout, stderr) => {
+        if (stderr) {
+          console.log("STD ERROR");
+          reject({ stderr });
+          return;
+        }
+        if (error) {
+          // Time Limit Exceeded
+          if (error.killed) {
+            return reject({
+              verdict: "Time Limit Exceeded",
+              stderr: "Program exceeded 2 seconds",
+            });
+          }
+
+          console.log("line 224");
+
+          console.log(error);
+          // Python syntax errors, exceptions, etc.
+          // return reject({
+          //   verdict: "Runtime Error",
+          //   stderr: stderr || error.message,
+          // });
+          return reject({
+            verdict: "error",
+            error: error.message || stderr,
+          });
+        }
+
+        // if (stderr) {
+        //   console.log(stderr);
+        //   return reject({
+        //     verdict: "stderr",
+        //     error: stderr || error.message,
+        //   });
+        // }
+        console.log("success");
+
+        resolve({
+          verdict: "Success",
+          output: stdout,
         });
-        return; // prevent the further exection ====> as promise settels only once
-      }
-
-      if (stderr) {
-        console.log("STD ERROR");
-        // If the command produce any error (if there is any error in the command)
-        reject({ "error in the terminal": stderr });
-        return;
-      }
-
-      resolve(stdout);
-    });
+      },
+    );
   });
-
   return execute_cmd;
 };
 
