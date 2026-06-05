@@ -152,7 +152,7 @@ function Console(props) {
   const customInputMethod = (value) => {
     console.log(value);
     setIsCustomInput(value);
-    setCustomOutput("")
+    setCustomOutput("");
   };
   return (
     <div className="console-container">
@@ -164,34 +164,33 @@ function Console(props) {
           </button> */}
           {/* <button className="ouputs">Result</button> */}
         </div>
-        {!submitFlag &&
-          !isCustomInput &&(
-            <div className="tc-ai">
-              <div className="testCaseHeader">
-                {defaultTestCases.map((testCase, index) => (
-                  <button
-                    className="testCase"
-                    onClick={() => selectedTestCase(index)}
-                  >
-                    {" "}
-                    TestCase-{index + 1}
-                  </button>
-                ))}
+        {!submitFlag && !isCustomInput && (
+          <div className="tc-ai">
+            <div className="testCaseHeader">
+              {defaultTestCases.map((testCase, index) => (
+                <button
+                  className="testCase"
+                  onClick={() => selectedTestCase(index)}
+                >
+                  {" "}
+                  TestCase-{index + 1}
+                </button>
+              ))}
+            </div>
+            {defaultTestCases.length > 0 && (
+              <div>
+                <button
+                  className="ai-review"
+                  onClick={generateAiReview}
+                  // disabled={isRun}
+                >
+                  {" "}
+                  Ask-ai
+                </button>
               </div>
-              {defaultTestCases.length > 0 && (
-                <div>
-                  <button
-                    className="ai-review"
-                    onClick={generateAiReview}
-                    // disabled={isRun}
-                  >
-                    {" "}
-                    Ask-ai
-                  </button>
-                </div>
-              )}
-            </div>,
-          )}
+            )}
+          </div>
+        )}
 
         {showAiReview && (
           <AiReviewDialog
@@ -201,7 +200,7 @@ function Console(props) {
           ></AiReviewDialog>
         )}
 
-        {!submitFlag && currentTc >= 0 && !isCustomInput &&(
+        {!submitFlag && currentTc >= 0 && !isCustomInput && (
           <div className="currentTestCase">
             <div className="input">{defaultTestCases[currentTc]?.input}</div>
             <div className="Expectedoutput">
@@ -225,8 +224,7 @@ function Console(props) {
         )}
 
         <div className="footer">
-
-              <div>
+          <div>
             <input
               id="custom-input-checkbox"
               onChange={(e) => customInputMethod(e.target.checked)}
@@ -235,31 +233,31 @@ function Console(props) {
             <label for="custom-input-checkbox"> Custom Input</label>
           </div>
 
-          {
-            isCustomInput && (
-             <div>
-              <input id="custom-input" onChange={(e)=>{setCustomInput(e.target.value)}}/>
-              </div>
-            )
-          }
+          {isCustomInput && (
+            <div>
+              <input
+                id="custom-input"
+                onChange={(e) => {
+                  setCustomInput(e.target.value);
+                }}
+              />
+            </div>
+          )}
 
-          {
-            customOutput.ans && isCustomInput &&(
-              <div> Output : {customOutput.ans}</div>
-            )         
-          }
+          {customOutput.ans && isCustomInput && (
+            <div> Output : {customOutput.ans}</div>
+          )}
 
-
-          {!isCustomInput &&(
-          <button
-            className="run"
-            onClick={() => {
-              runProblem();
-            }}
-          >
-            Run
-          </button>)
-          }
+          {!isCustomInput && (
+            <button
+              className="run"
+              onClick={() => {
+                runProblem();
+              }}
+            >
+              Run
+            </button>
+          )}
           <button
             className="run"
             onClick={() => {
