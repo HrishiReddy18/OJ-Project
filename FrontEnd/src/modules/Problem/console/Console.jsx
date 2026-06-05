@@ -7,6 +7,9 @@ import AiReviewDialog from "../ai-review-dialog/AiReviewDialog";
 function Console(props) {
   const [currentTc, setcurrentTc] = useState(-1);
   const [tcOutput, setTcOutput] = useState([]);
+  const [customInput, setCustomInput] = useState("");
+  const [customOutput, setCustomOutput] = useState("");
+  const [isCustomInput, setIsCustomInput] = useState("");
   const [verdict, setVerdict] = useState("");
   const [isRun, setIsRun] = useState(false);
   const [defaultTestCases, setdefaultTestCases] = useState([]);
@@ -71,6 +74,27 @@ function Console(props) {
 
     console.log("tcOutput: ", tcOutput);
   };
+  const runProblemWithCustomTestCase = async () => {
+    let currInput = input; //fetch from context API
+    currInput.input = customInput;
+
+    const data = await fetch("http://localhost:3000/run", {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(currInput),
+      method: "POST",
+      credentials: "include",
+    });
+
+    const res = await data.json();
+    console.log(res);
+    setCustomOutput(res);
+    if (res.err) {
+      setStderr(res.err.stderr);
+      return;
+    }
+  };
   const submitProblem = async () => {
     let currInput = input; //fetch from context API
     currInput.problemId = id;
@@ -125,6 +149,11 @@ function Console(props) {
   const closeDialog = () => {
     setShowAiReview(false);
   };
+  const customInputMethod = (value) => {
+    console.log(value);
+    setIsCustomInput(value);
+    setCustomOutput("")
+  };
   return (
     <div className="console-container">
       {/* {!submitFlag && ( */}
@@ -135,33 +164,34 @@ function Console(props) {
           </button> */}
           {/* <button className="ouputs">Result</button> */}
         </div>
-        {!submitFlag && (
-          <div className="tc-ai">
-            <div className="testCaseHeader">
-              {defaultTestCases.map((testCase, index) => (
-                <button
-                  className="testCase"
-                  onClick={() => selectedTestCase(index)}
-                >
-                  {" "}
-                  TestCase-{index + 1}
-                </button>
-              ))}
-            </div>
-            {defaultTestCases.length > 0 && (
-              <div>
-                <button
-                  className="ai-review"
-                  onClick={generateAiReview}
-                  // disabled={isRun}
-                >
-                  {" "}
-                  Ask-ai
-                </button>
+        {!submitFlag &&
+          !isCustomInput &&(
+            <div className="tc-ai">
+              <div className="testCaseHeader">
+                {defaultTestCases.map((testCase, index) => (
+                  <button
+                    className="testCase"
+                    onClick={() => selectedTestCase(index)}
+                  >
+                    {" "}
+                    TestCase-{index + 1}
+                  </button>
+                ))}
               </div>
-            )}
-          </div>
-        )}
+              {defaultTestCases.length > 0 && (
+                <div>
+                  <button
+                    className="ai-review"
+                    onClick={generateAiReview}
+                    // disabled={isRun}
+                  >
+                    {" "}
+                    Ask-ai
+                  </button>
+                </div>
+              )}
+            </div>,
+          )}
 
         {showAiReview && (
           <AiReviewDialog
@@ -171,7 +201,7 @@ function Console(props) {
           ></AiReviewDialog>
         )}
 
-        {!submitFlag && currentTc >= 0 && (
+        {!submitFlag && currentTc >= 0 && !isCustomInput &&(
           <div className="currentTestCase">
             <div className="input">{defaultTestCases[currentTc]?.input}</div>
             <div className="Expectedoutput">
@@ -195,6 +225,32 @@ function Console(props) {
         )}
 
         <div className="footer">
+
+              <div>
+            <input
+              id="custom-input-checkbox"
+              onChange={(e) => customInputMethod(e.target.checked)}
+              type="checkbox"
+            />
+            <label for="custom-input-checkbox"> Custom Input</label>
+          </div>
+
+          {
+            isCustomInput && (
+             <div>
+              <input id="custom-input" onChange={(e)=>{setCustomInput(e.target.value)}}/>
+              </div>
+            )
+          }
+
+          {
+            customOutput.ans && isCustomInput &&(
+              <div> Output : {customOutput.ans}</div>
+            )         
+          }
+
+
+          {!isCustomInput &&(
           <button
             className="run"
             onClick={() => {
@@ -202,6 +258,15 @@ function Console(props) {
             }}
           >
             Run
+          </button>)
+          }
+          <button
+            className="run"
+            onClick={() => {
+              runProblemWithCustomTestCase();
+            }}
+          >
+            Run Custom TestCase
           </button>
           <button
             className="Submit"
